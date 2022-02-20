@@ -1,0 +1,288 @@
+program psedecode vsm
+=====================
+
+
+algoritma 1: pemisahan term
+===========================
+
+    input
+    query, dokumen
+    
+    output
+    term
+
+    deklarasi
+    var query : string
+    var dokumen : string
+    var arrayTampung : array
+    var string_term : string
+    var word : string
+    
+    foreach value in dokumen do 
+        foreach key1 in value do
+            if key1 == 'dokumen' then
+                 arrayTampung = value1
+            end            
+        
+    
+
+    // menggabungkan query ke term
+    arrayTampung = query
+
+    // semua value $arrayTampung jadi satu string
+    string_term <- implode(" ", arrayTampung)
+    
+    // semua string jadi array | untuk mendapatkan term
+    string_array <- explode(" ", string_term)
+
+    // mendapatkan term
+    word       <- str_word_count(string_term, 1) 
+    term       <- array_count_values(word)
+
+    return term
+    
+    
+
+algoritma 2: mendapatkan term dari masing-masing dokumen
+=========================================================
+
+    input
+    dokumen
+    
+    output
+    arrayTampung
+
+    deklarasi
+    var dokumen : string
+    var arrayTampung : array
+    var string_array : array
+    
+    foreach value in dokumen do 
+
+        string_array <- explode(" ", value)
+        
+        // mendapatkan term
+        word  <- str_word_count(value, 1)
+        term  <- array_count_values($word)
+        arrayTampung = term 
+    
+
+
+
+
+algoritma 3: Mendapatkan nilai df dari masing-masing dokumen & term & query
+===========================================================================
+
+    input
+    term, query, document
+    
+    output
+    arrayDf
+
+    deklarasi
+    var term : string
+    var query : string
+    var dokumen : string
+    var arrayDf : array
+
+    // menginput key arrayDF
+    foreach value in term do
+        arrayDF[key] = 0
+
+
+    // pengisian df dari $query
+    foreach value in term do
+        foreach value1 in query do
+            if value == value1 then
+                arrayDF[key] <- arrayDF + 1
+            end
+
+
+    // pengisian df dari dokumen
+    foreach value in term do
+        foreach value1 in dokumen_term do
+            foreach value2 in value1 do
+                if value1 == value2 then
+                    arrayDF[key] <- arrayDF + 1
+                end
+
+    return arrayDF
+
+
+
+algoritma 4: Mendapatkan nilai idf dari df
+==========================================
+
+    input
+    query, dokumen_term, df
+    
+    output
+    arrayIdf
+
+    deklarasi
+    var query : string
+    var dokumen_term : array
+    var df : array
+    var arrayDf : array
+    var N_count : array
+
+    N_count <- count($dokumen_term) + 1
+
+    foreach value in df do
+        arrayIDF <- log10 ( N_count / value )
+
+    return arrayIDF
+
+
+
+algoritma 5: Melakukan pembobotan
+=================================
+    
+    input 
+    query, dokumen_term, idf
+    
+    output
+    arrayBobot
+
+    deklarasi
+    var query : string
+    var dokumen_term : array
+    var idf : array
+    var bobotQuery : array
+    var bobotDokumen : array
+    var arrayTampung : array
+
+    // pembobotan query
+    foreach value in idf do
+        foreach value1 in query
+            if value == value1 then
+                bobotQuery[key] = 1*value
+            end
+
+    // pembobotan setiap dokumen
+    foreach dokumen in dokumen_term do
+        foreach value in idf do
+            foreach value1 in dokumen do
+                if value == value1 then
+                    arrayTampung = value*value1
+                end
+    bobotDokumen <- dokumen + dokumenTampung
+
+
+    // array bobot
+    arraybobot <- bobot_query + bobotDokumen
+
+    return arrayBobot
+
+
+
+
+algoritma 6: Melakukan perangking-an dengan cosine similarity
+=============================================================
+    
+    input 
+    bobot
+    
+    output
+    dokumenRanking
+
+    deklarasi
+    var queryCosJumlah : int
+    var queryCosAkar : int
+    var dokumenCosJumlahAkar : array
+    var bobot : array
+    var arrayDoc : array
+    var bobotDoc : array
+    var dokumenVektor : array
+    var dokumenBesarVektor : array
+    var dokumenCosine : array
+    var dokumenRanking : array
+    var jumlah : int
+
+
+    // mendapatkan jumlah dan akar dari query @float
+    queryCosJumlah <- 0
+    foreach value in bobot do
+        queryCosJumlah <-  queryCosJumlah + 1
+    queryCosAkar <- sqrt(queryCosJumlah)
+
+
+    // mendapatkan jumlah dan akar dari setiap dokumen @array
+    foreach dokumen in bobot do
+        arrayDoc <- dokumen
+        bobotDoc <- 0
+        foreach value in bobot do
+            foreach value1 in dokumen do
+                if value == value1 then
+                    bobotDoc <- value1 + value1
+                end
+    arrayDoc <- bobotDoc + sqrt(bobotDoc)
+    dokumenCosJumlahAkar <- arrayDoc
+
+    
+    // mendapatkan vektor
+    foreach dokumen in bobot do
+        arrayDoc <- dokumen
+        bobotDoc <- 0
+        foreach value in bobot do
+            foreach value1 in dokumen do
+                if value == value1 then 
+                    vaktorDoc <- value * value1
+                end
+        arrayDoc <- vaktorDoc
+        dokumenVektor <- arrayDoc
+
+    
+    // mendapatkan besar vektor
+    foreach dokumen in dokumenCosJumlahAkar do
+        arrayDoc <- dokumen
+        besarVektorDoc <- dokumen
+
+        arrayDoc <- besarVektorDoc * queryCosAkar
+        dokumenBesarVektor <- arrayDoc
+
+
+    // gabungkan array vektor dan besar vektor
+    foreach dokumen in dokumenVektor do
+        arrayDoc <- dokumen
+        vectorCosine <- 0
+
+        foreach dokumen1 in dokumenBesarVektor do
+            if dokumen1 == dokumen then 
+            
+                vectorCosine <- dokumen1
+            
+                arrayDoc <- vectorCosine
+                dokumenCosine <- arrayDoc
+
+            end
+
+    // membuat ranking
+    foreach dokumen in dokumenCosine do
+        jumlah <- 0
+        if dokumen[jumlah_vektor] != 0 && dokumen[jumlah_besar_vektor] then 
+            jumlah <- dokumen[jumlah_vektor] * dokumen[jumlah_besar_vektor] 
+        end  
+        arrayDoc <- dokumen + jumlah
+        dokumenRanking <- arrayDoc
+
+
+    return dokumenRanking
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
