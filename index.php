@@ -51,73 +51,40 @@
 <center>
 	<h1 style="font-size:50px">Pencarian Cerpen</h1>
 	<br>
-	<form method="post">
-		<input type="text" name="p" placeholder="Masukkan Kata Kunci....">
+	<form method="get">
+		<input type="text" name="p" id="p" placeholder="Masukkan Kata Kunci....">
 		<br>
 		<br>
-		<input type="submit" name="submit" class="button" value="CARI">
+		<input type="submit" name="submit" id="btn1" class="button" value="CARI">
 		<a href="login.php" class="button">LOGIN</a>
     </form>
 </center>
+
+<style type="text/css">
+#loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+
 
 
     <main>
       <div class="container mt-4">
 
 
-<?php
-include_once __DIR__."/VSMModule/Preprocessing.php";
-include_once __DIR__."/VSMModule/VSM.php";
-include 'admin/config/connect-db.php';
-
-function pencarian($katakunci, $mysqli)
-{
-    // == STEP 1 inisialisasi
-    $preprocess = new Preprocessing();
-    $vsm = new VSM();
-
-    // == STEP 2 mendapatkan kata dasar
-    $query = $preprocess::preprocess($katakunci);
-
-    // == waktu mulai 
-    $start_time = microtime(true);
-    $a=1;
-
-    // == STEP 3 medapatkan dokumen ke array
-    $connect = mysqli_query($mysqli, "SELECT * FROM tb_cerpen");
-    $arrayDokumen = [];
-    while ($row = mysqli_fetch_assoc($connect)) {
-        $arrayDoc = [
-            'id_doc' => $row['id'].' || '.$row['judul'],
-            'dokumen' => implode(" ", $preprocess::preprocess($row['isi_cerpen']))
-        ];
-        array_push($arrayDokumen, $arrayDoc);
-    }
-    
-    // STEP 4 == mendapatkan ranking dengan VSM
-    $rank = $vsm::get_rank($query, $arrayDokumen);
-    //var_dump($rank);
-    tampildata($katakunci, $rank);
-
-    // End clock time in seconds
-	$end_time = microtime(true);
-	  
-	// Calculate script execution time
-	$execution_time = ($end_time - $start_time);
-	  
-	echo "<br><b>Waktu Eksekusi: ".$execution_time." Detik</b>";
-
-    die();
-
-}
-
-function tampildata($query, $data)
-{
-	$no = 1;
-    ksort($data);
-
-    echo "<br><br>
-		  <b style='margin-left:150px;font-size:20px;'>Kata Kunci Yang Dimasukkan: <i><u>$query</u></i></b>
+		<center><div id="loader" style="display: none;"></div></center>
+    	<center><b>Waktu Eksekusi: <span id="waktu_eksekusi">0</span> Detik</b></center>
+		  <b style='margin-left:10px;font-size:20px;'>Kata Kunci Yang Dimasukkan: <i><u id="query"></u></i></b>
 		  <center>
           <div class='datatable'>
           <table id='example' class='table table-striped' style='width:100%'>
@@ -129,33 +96,10 @@ function tampildata($query, $data)
 			  <th>Aksi</th>
 			</tr>
 			</thead>
-			<tbody>";
-
-
-    foreach($data as $d){
-
-    	if($d['ranking'] > 0)
-    	{
-
-			$id = explode(' || ', $d['id_doc']);
-			$dx = $id[0];
-			$nm = $id[1];
-
-		    echo "<tr>
-				  <td>".$no."</td>
-				  <td>".$id[1]."</td>
-				  <td>".$d['ranking']."</td>
-				  <td><a href='baca.php?id=".$dx."' class='button'>Baca Cerpen</a></td>
-				</tr>";
-
-    	    $no++;
-        }
-
-    }
-    
-
-    echo "</tbody>
-          <tfoot>  
+			<tbody id="example_tbody">
+			
+			</tbody>
+           <tfoot>  
             <tr>
 			  <th>No</th>
 			  <th>Judul</th>
@@ -164,22 +108,8 @@ function tampildata($query, $data)
 			</tr>
 		  </tfoot>
     	</table>
-      </div>";
 
-
-
-}
-
-if(isset($_POST['submit'])){
-
-  // jalankan fungsi
-  pencarian($_POST['p'], $mysqli);
-
-}
-
-
-?>
-
+      </div>
 
 
     </main>
@@ -199,6 +129,53 @@ if(isset($_POST['submit'])){
 	    $('#example').DataTable( {
 	        "order": [[ 2, "desc" ]]
 	    });
+    });
+
+    $('#btn1').on('click', function (e) {
+    	
+      e.preventDefault();
+      $('#loader').attr('style', "display: block;");
+      $('#btn1').attr('value', "Mohon Tunggu...");
+      document.getElementById('btn1').disabled = true;
+
+       $.ajax({
+        type: 'GET',
+        url: "api.php?p="+$('#p').val(),
+        data:{},
+        success: function(data){
+            //var result   = jQuery.parseJSON(data);
+             
+            $('#query').html(data[0].query);
+            $('#waktu_eksekusi').html(data[0].waktu_eksekusi);
+            //console.log(data[0].hasil_ranking);
+
+             var tb = "";
+             var datas = data[0].hasil_ranking;
+             for (var i = 0; i < datas.length; i++) {
+               tb += "<tr role='row'>"+
+                      "<td tabindex='0' class='sorting_1'>"+(i+1)+"</td>"+
+                      "<td>"+datas[i].judul+"</td>"+
+                      "<td>"+datas[i].ranking+"</td>"+
+                      "<td>"+datas[i].btn+"</td>"+
+                      "</tr>";
+             }
+
+            $('#example_tbody').html(tb);
+            
+
+            $('#loader').attr('style', "display: none;");
+            $('#btn1').attr('value', "CARI");
+            document.getElementById('btn1').disabled = false;
+        
+        },  error: function(error){
+
+            $('#loader').attr('style', "display: none;");
+            $('#btn1').attr('value', "CARI");
+            document.getElementById('btn1').disabled = false;
+        }
+      });
+
+
     });
 
   </script>
