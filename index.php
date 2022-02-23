@@ -125,56 +125,60 @@
   
   <script type="text/javascript">
   	
-	$(document).ready(function() {
-	    $('#example').DataTable( {
-	        "order": [[ 2, "desc" ]]
-	    });
-    });
+  	
 
     $('#btn1').on('click', function (e) {
     	
       e.preventDefault();
+
+
+      table=$('#example').on('preXhr.dt', function ( e, settings, data ) {
+        
       $('#loader').attr('style', "display: block;");
       $('#btn1').attr('value', "Mohon Tunggu...");
       document.getElementById('btn1').disabled = true;
 
-       $.ajax({
-        type: 'GET',
-        url: "api.php?p="+$('#p').val(),
-        data:{},
-        success: function(data){
-            //var result   = jQuery.parseJSON(data);
-             
-            $('#query').html(data[0].query);
-            $('#waktu_eksekusi').html(data[0].waktu_eksekusi);
-            //console.log(data[0].hasil_ranking);
+       }).DataTable({
 
-             var tb = "";
-             var datas = data[0].hasil_ranking;
-             for (var i = 0; i < datas.length; i++) {
-               tb += "<tr role='row'>"+
-                      "<td tabindex='0' class='sorting_1'>"+(i+1)+"</td>"+
-                      "<td>"+datas[i].judul+"</td>"+
-                      "<td>"+datas[i].ranking+"</td>"+
-                      "<td>"+datas[i].btn+"</td>"+
-                      "</tr>";
-             }
-
-            $('#example_tbody').html(tb);
-            
-
-            $('#loader').attr('style', "display: none;");
+        ajax: {
+          url: "api.php?p="+$('#p').val(),
+          dataSrc: 'hasil_ranking'
+        },
+          "columnDefs": [
+            {
+             "searchable": false,
+             "orderable": false,
+             "targets": 0
+            }
+          ],
+          "order": [
+            [2, 'desc']
+          ],
+        "columns": [
+          { "data": null },
+          { "data": "judul" },
+          { "data": "ranking" },
+          { "data": "btn" }
+        ],
+        retrieve: true,
+        paging: true,
+		"initComplete": function(settings, json) {
+			$('#query').html(json.query);
+      		$('#waktu_eksekusi').html(json.waktu_eksekusi);
+			$('#loader').attr('style', "display: none;");
             $('#btn1').attr('value', "CARI");
             document.getElementById('btn1').disabled = false;
-        
-        },  error: function(error){
-
-            $('#loader').attr('style', "display: none;");
-            $('#btn1').attr('value', "CARI");
-            document.getElementById('btn1').disabled = false;
-        }
+		}
       });
 
+      table.on('order.dt search.dt', function() {
+        table.column(0, {
+          search: 'applied',
+          order: 'applied'
+        }).nodes().each(function(cell, i) {
+          cell.innerHTML = i + 1;
+        });
+      }).draw();
 
     });
 

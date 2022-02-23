@@ -28,6 +28,11 @@
       </div>
       
       <div class="w3-section">
+        <label>Sumber Cerpen</label>
+        <input class="w3-input w3-border" type="input" name="sumber" value="<?php echo $data['sumber']; ?>">
+      </div>
+
+      <div class="w3-section">
         <label>Isi Cerpen</label>
         <textarea name="isi_cerpen" id="input_1" class="w3-input w3-border"><?php echo $data['isi_cerpen']; ?></textarea>
       </div>     
@@ -66,11 +71,13 @@ if(isset($_POST['Update'])) {
   // Memasukkan Data Inputan ke Varibael
   $id         = $_POST['id'];
   $judul      = $_POST['judul'];
+  $sumber     = $_POST['sumber'];
   $isi_cerpen = $_POST['isi_cerpen'];
   
   // Memasukkan data kedatabase berdasarakan variabel tadi
   $result = mysqli_query($mysqli, "UPDATE tb_cerpen SET 
                                    judul='$judul',
+                                   sumber='$sumber',
                                    isi_cerpen='$isi_cerpen'
                                    WHERE id=$id");
   

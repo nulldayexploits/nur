@@ -22,6 +22,7 @@
           <th>No</th>
           <th>Judul Cerpen</th>
           <th>Isi Cerpen</th>
+          <th>Sumber</th>
           <th>Aksi</th>
         </tr>
         
@@ -35,6 +36,7 @@
           <td><center><?php echo $no; ?></td>
           <td><?php echo $data['judul']; ?></td>
           <td><?php echo substr($data['isi_cerpen'],0,30).'...'; ?></td>
+          <td><?php echo $data['sumber']; ?></td>
           <td><center>
             <a href="edit_cerpen.php?id=<?php echo $data['id']; ?>" class="btn btn-danger waves-effect">EDIT</a>
             <a href="hapus_cerpen.php?id=<?php echo $data['id']; ?>" class="btn btn-danger waves-effect" onclick="return confirm('Apakah Anda Yakin Akan Menghapus Ini?');">HAPUS</a>

@@ -56,7 +56,7 @@ function pencarian($katakunci, $mysqli)
 						 "id" => $dx,
 						 "judul" => $nm,
 						 "ranking" => $d['ranking'],
-						 "btn" => "<a href='baca.php?id=$dx' class='button' target='_blank'>Baca Cerpen</a>"
+						 "btn" => "<a href='baca.php?id=$dx' class='button'>Baca Cerpen</a>"
 					   ];
 
         }
@@ -69,14 +69,14 @@ function pencarian($katakunci, $mysqli)
 	// Calculate script execution time
 	$execution_time = ($end_time - $start_time);
 	
-	$response = [
+	$response[] = [
 					"query" => $katakunci,
 					"waktu_eksekusi" => $execution_time,
 					"hasil_ranking" => $datas
 				  ];  
 	
 
-	echo json_encode($response);
+	echo json_encode($datas);
 
     die();
 

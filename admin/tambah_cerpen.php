@@ -20,7 +20,12 @@
         <label>Judul Cerpen</label>
         <input class="w3-input w3-border" type="input" name="judul">
       </div>
-                  
+            
+      <div class="w3-section">
+        <label>Sumber Cerpen</label>
+        <input class="w3-input w3-border" type="input" name="sumber">
+      </div>
+
       <div class="w3-section">
         <label>Isi Cerpen</label>
         <textarea name="isi_cerpen" id="input_1" class="w3-input w3-border"></textarea>
@@ -58,11 +63,12 @@ if(isset($_POST['Submit'])) {
 
   // Memasukkan Data Inputan ke Varibael
   $judul      = $_POST['judul'];
+  $sumber     = $_POST['sumber'];
   $isi_cerpen = $_POST['isi_cerpen'];
   
   // Memasukkan data kedatabase berdasarakan variabel tadi
-  $result = mysqli_query($mysqli, "INSERT INTO tb_cerpen (id, judul, isi_cerpen) 
-                               VALUES(null, '$judul', '$isi_cerpen')");
+  $result = mysqli_query($mysqli, "INSERT INTO tb_cerpen (id, judul, sumber, isi_cerpen) 
+                               VALUES(null, '$judul', '$sumber', '$isi_cerpen')");
   
   // Cek jika proses simpan ke database sukses atau tidak   
   if($result){ 
