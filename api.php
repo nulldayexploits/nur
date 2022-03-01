@@ -30,7 +30,7 @@ function pencarian($katakunci, $mysqli)
     $arrayDokumen = [];
     while ($row = mysqli_fetch_assoc($connect)) {
         $arrayDoc = [
-            'id_doc' => $row['id'].' || '.$row['judul'],
+            'id_doc' => $row['id'].' || '.$row['judul'].' || '.$row['sumber'],
             'dokumen' => implode(" ", $preprocess::preprocess($row['isi_cerpen']))
         ];
         array_push($arrayDokumen, $arrayDoc);
@@ -51,10 +51,11 @@ function pencarian($katakunci, $mysqli)
 			$id = explode(' || ', $d['id_doc']);
 			$dx = $id[0];
 			$nm = $id[1];
+			$sm = $id[2];
 
 			$datas[] = [
 						 "id" => $dx,
-						 "judul" => $nm,
+						 "judul" => $nm.'<br><b>Sumber:</b> '.$sm,
 						 "ranking" => $d['ranking'],
 						 "btn" => "<a href='baca.php?id=$dx' class='button' target='_blank'>Baca Cerpen</a>"
 					   ];
